@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">MissedCalls</string>
+    <string name="no_missed_calls">No missed calls</string>
+    <string name="menu_settings">Settings</string>
+    <string name="menu_endpoint">View endpoint</string>
+    <string name="menu_sync">Sync</string>
+
 </resources>

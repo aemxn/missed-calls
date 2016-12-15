@@ -1,4 +1,13 @@
 apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
+
+repositories {
+    maven {
+        url 'https://github.com/uPhyca/stetho-realm/raw/master/maven-repo'
+    }
+}
+
+def supportVer = '25.0.1'
 
 android {
     compileSdkVersion 25
@@ -8,7 +17,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 25
         versionCode 1
-        versionName "1.0"
+        versionName "0.0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -27,6 +36,16 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.0.1'
     testCompile 'junit:junit:4.12'
 
+    compile "com.android.support:recyclerview-v7:$supportVer"
+    compile "com.android.support:support-v4:$supportVer"
     compile 'com.github.hotchemi:permissionsdispatcher:2.2.1'
     annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.2.1'
+    compile 'com.facebook.stetho:stetho:1.4.2'
+    compile 'com.uphyca:stetho_realm:2.0.0'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
+    compile 'com.iamhabib:easy-preference:1.0.1'
 }
