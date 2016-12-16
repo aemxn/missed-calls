@@ -1,12 +1,14 @@
 package com.aimanbaharum.missedcalls.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,24 +21,34 @@ import com.aimanbaharum.missedcalls.model.Calls;
 import com.aimanbaharum.missedcalls.presenter.CallsPresenter;
 import com.aimanbaharum.missedcalls.presenter.LogCalls;
 import com.aimanbaharum.missedcalls.utils.AlertDialogUtils;
+import com.aimanbaharum.missedcalls.utils.Constants;
+import com.aimanbaharum.missedcalls.utils.PrefKey;
 import com.aimanbaharum.missedcalls.view.CallsView;
 import com.aimanbaharum.missedcalls.view.SyncView;
+import com.iamhabib.easy_preference.EasyPreference;
 
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.hypertrack.smart_scheduler.Job;
+import io.hypertrack.smart_scheduler.SmartScheduler;
 import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity implements CallsView, SyncView {
+public class MainActivity extends AppCompatActivity implements CallsView, SyncView,
+        SmartScheduler.JobScheduledCallback, AlertDialogUtils.IntervalSelect {
 
     @BindView(R.id.tv_empty)
     TextView tvEmpty;
 
     @BindView(R.id.rv_calls_list)
     RecyclerView rvCallsList;
+
+    private static final int JOB_ID = 1;
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String JOB_PERIODIC_TASK_TAG = "com.aimanbaharum.missedcalls.JobPeriodicTask";
 
     private CallsPresenter callsPresenter;
     private CallsAdapter mCallsAdapter;
@@ -55,6 +67,40 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
         rvCallsList.addItemDecoration(itemDecoration);
         rvCallsList.setLayoutManager(manager);
         rvCallsList.setHasFixedSize(true);
+
+        startScheduler();
+    }
+
+    private void startScheduler() {
+        SmartScheduler jobScheduler = SmartScheduler.getInstance(this);
+
+        Job job = createJob();
+        if (jobScheduler.addJob(job)) {
+            Log.d(TAG, "scheduler started");
+//            Toast.makeText(MainActivity.this, "Job scheduled at 5000ms", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private Job createJob() {
+        long interval = EasyPreference.with(this)
+                .getLong(PrefKey.KEY_INTERVAL_MILLIS.name(), Constants.DEFAULT_INTERVAL);
+
+        return new Job.Builder(JOB_ID, this, Job.Type.JOB_TYPE_PERIODIC_TASK, JOB_PERIODIC_TASK_TAG)
+                .setPeriodic(interval)
+                .build();
+    }
+
+    @Override
+    public void onJobScheduled(Context context, final Job job) {
+        if (job != null) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    callsPresenter.syncNumbers(MainActivity.this);
+//                    Toast.makeText(MainActivity.this, "Job: " + job.getJobId() + " scheduled!", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     @NeedsPermission({Manifest.permission.READ_CALL_LOG})
@@ -108,8 +154,30 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
             case R.id.action_sync:
                 callsPresenter.syncNumbers(this);
                 return true;
+            case R.id.action_interval:
+                AlertDialogUtils.setInterval(this, this);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onIntervalSelect(int index, long millis) {
+        EasyPreference.with(MainActivity.this)
+                .addInt(PrefKey.KEY_INTERVAL_INDEX.name(), index)
+                .addLong(PrefKey.KEY_INTERVAL_MILLIS.name(), millis)
+                .save();
+
+        SmartScheduler jobScheduler = SmartScheduler.getInstance(this);
+        if (!jobScheduler.contains(JOB_ID)) {
+            Toast.makeText(MainActivity.this, "No job exists with JobID: " + JOB_ID, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (jobScheduler.removeJob(JOB_ID)) {
+            Log.d(TAG, "job stopped");
+            startScheduler();
         }
     }
 

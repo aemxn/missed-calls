@@ -13,4 +13,8 @@
         android:id="@+id/action_sync"
         app:showAsAction="never"
         android:title="@string/menu_sync"/>
+    <item
+        android:id="@+id/action_interval"
+        app:showAsAction="never"
+        android:title="@string/menu_interval"/>
 </menu>

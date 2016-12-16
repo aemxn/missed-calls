@@ -48,4 +48,5 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.okhttp3:okhttp:3.5.0'
     compile 'com.iamhabib:easy-preference:1.0.1'
+    compile 'io.hypertrack:smart-scheduler:0.0.3'
 }
