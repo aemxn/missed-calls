@@ -22,13 +22,13 @@ public class SyncService extends BaseHttpCall {
     public void syncNumbers(String endpoint, String[] numbers,
                             final SyncCallback.SyncApiCallback callback) {
 
-        StringBuilder sb = new StringBuilder();
+        StringBuilder commaNumbers = new StringBuilder();
         for (String n : numbers) {
-            if (sb.length() > 0) sb.append(',');
-            sb.append(n);
+            if (commaNumbers.length() > 0) commaNumbers.append(',');
+            commaNumbers.append(n);
         }
 
-        final String fEndpoint = endpoint + "?numbers=" + sb.toString();
+        final String fEndpoint = endpoint + commaNumbers.toString();
 
         try {
 //            MediaType mediaType = MediaType.parse("application/json");
