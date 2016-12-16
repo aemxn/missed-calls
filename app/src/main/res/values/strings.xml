@@ -5,5 +5,6 @@
     <string name="menu_interval">Set interval</string>
     <string name="menu_endpoint">View endpoint</string>
     <string name="menu_sync">Sync now</string>
+    <string name="hint_endpoint">http://www.domain.com/api</string>
 
 </resources>

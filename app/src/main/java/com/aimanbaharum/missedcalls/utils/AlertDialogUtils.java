@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.aimanbaharum.missedcalls.R;
 import com.iamhabib.easy_preference.EasyPreference;
 
 /**
@@ -16,6 +17,7 @@ public class AlertDialogUtils {
 
     public static void showSettings(final Context context) {
         final EditText mEtEndpoint = new EditText(context);
+        mEtEndpoint.setHint(context.getResources().getString(R.string.hint_endpoint));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true)
