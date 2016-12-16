@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
 
     private CallsPresenter callsPresenter;
     private CallsAdapter mCallsAdapter;
+    private LogCalls logCalls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
 
     @NeedsPermission({Manifest.permission.READ_CALL_LOG})
     public void startLogging() {
-        LogCalls logCalls = new LogCalls(this);
+        logCalls = new LogCalls(this);
         logCalls.logCalls();
 
         // todo combine logcalls with presenter
@@ -146,7 +147,7 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
         switch (item.getItemId()) {
             case R.id.action_settings:
                 // todo add interval updates
-                AlertDialogUtils.showSettings(this);
+                AlertDialogUtils.setEndpoint(this);
                 return true;
             case R.id.action_endpoint:
                 AlertDialogUtils.showEndpoint(this);
@@ -156,6 +157,9 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
                 return true;
             case R.id.action_interval:
                 AlertDialogUtils.setInterval(this, this);
+                return true;
+            case R.id.action_limit:
+                AlertDialogUtils.setSyncLimit(this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -187,7 +191,8 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                callsPresenter.showMissedCalledList(MainActivity.this);
+                startLogging();
+//                callsPresenter.showMissedCalledList(MainActivity.this);
             }
         });
     }
@@ -198,7 +203,8 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-                callsPresenter.showMissedCalledList(MainActivity.this);
+                startLogging();
+//                callsPresenter.showMissedCalledList(MainActivity.this);
             }
         });
     }

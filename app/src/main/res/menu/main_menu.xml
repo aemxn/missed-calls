@@ -2,14 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_settings"
-        app:showAsAction="never"
-        android:title="@string/menu_settings"/>
-    <item
-        android:id="@+id/action_endpoint"
-        app:showAsAction="never"
-        android:title="@string/menu_endpoint"/>
-    <item
         android:id="@+id/action_sync"
         app:showAsAction="never"
         android:title="@string/menu_sync"/>
@@ -17,4 +9,16 @@
         android:id="@+id/action_interval"
         app:showAsAction="never"
         android:title="@string/menu_interval"/>
+    <item
+        android:id="@+id/action_limit"
+        app:showAsAction="never"
+        android:title="@string/menu_set_limit"/>
+    <item
+        android:id="@+id/action_settings"
+        app:showAsAction="never"
+        android:title="@string/menu_set_endpoint"/>
+    <item
+        android:id="@+id/action_endpoint"
+        app:showAsAction="never"
+        android:title="@string/menu_endpoint"/>
 </menu>

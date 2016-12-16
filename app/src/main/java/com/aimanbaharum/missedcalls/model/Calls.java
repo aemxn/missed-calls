@@ -4,6 +4,7 @@ import java.util.List;
 
 import io.realm.Realm;
 import io.realm.RealmObject;
+import io.realm.Sort;
 import io.realm.annotations.PrimaryKey;
 
 /**
@@ -14,6 +15,7 @@ public class Calls extends RealmObject {
 
     @PrimaryKey
     private String dateCalled;
+    private long callerTimestamp;
     private String callerName;
     private String callerNumber;
     private boolean isSynced;
@@ -45,6 +47,14 @@ public class Calls extends RealmObject {
         this.dateCalled = dateCalled;
     }
 
+    public long getCallerTimestamp() {
+        return callerTimestamp;
+    }
+
+    public void setCallerTimestamp(long callerTimestamp) {
+        this.callerTimestamp = callerTimestamp;
+    }
+
     public boolean isSynced() {
         return isSynced;
     }
@@ -57,7 +67,7 @@ public class Calls extends RealmObject {
         return Realm.getDefaultInstance()
                 .copyFromRealm(Realm.getDefaultInstance()
                         .where(Calls.class)
-                        .findAll());
+                        .findAll().sort("callerTimestamp", Sort.DESCENDING));
     }
 
     public static List<Calls> getUnsynced() {
@@ -84,5 +94,12 @@ public class Calls extends RealmObject {
             Realm.getDefaultInstance().copyToRealmOrUpdate(calls);
         }
         Realm.getDefaultInstance().commitTransaction();
+    }
+
+    @Override
+    public String toString() {
+        return "Calls{" +
+                "callerNumber='" + callerNumber + '\'' +
+                '}';
     }
 }

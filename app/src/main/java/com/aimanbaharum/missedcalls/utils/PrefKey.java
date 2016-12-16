@@ -5,5 +5,5 @@ package com.aimanbaharum.missedcalls.utils;
  */
 
 public enum PrefKey {
-    KEY_ENDPOINT, KEY_INTERVAL_MILLIS, KEY_INTERVAL_INDEX
+    KEY_ENDPOINT, KEY_INTERVAL_MILLIS, KEY_INTERVAL_INDEX, KEY_SYNC_LIMIT
 }

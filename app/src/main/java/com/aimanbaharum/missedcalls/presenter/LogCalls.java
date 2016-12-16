@@ -3,6 +3,7 @@ package com.aimanbaharum.missedcalls.presenter;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.CallLog;
+import android.util.Log;
 
 import com.aimanbaharum.missedcalls.model.Calls;
 
@@ -14,6 +15,7 @@ import java.text.DateFormat;
 
 public class LogCalls {
 
+    private static final String TAG = LogCalls.class.getSimpleName();
     private Context mContext;
 
     public LogCalls(Context context) {
@@ -42,14 +44,17 @@ public class LogCalls {
                     String mCallerNumber = mCallCursor.getString(mCallCursor
                             .getColumnIndex(CallLog.Calls.NUMBER));
 
+                    long mCallerTimestamp = mCallCursor.getLong(mCallCursor
+                            .getColumnIndex(CallLog.Calls.DATE));
                     String mCallerTime = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG)
-                            .format(mCallCursor.getLong(mCallCursor
-                                    .getColumnIndex(CallLog.Calls.DATE)));
+                            .format(mCallerTimestamp);
+
 
                     Calls newCalls = new Calls();
                     newCalls.setCallerName(mCallerName);
                     newCalls.setCallerNumber(mCallerNumber);
                     newCalls.setDateCalled(mCallerTime);
+                    newCalls.setCallerTimestamp(mCallerTimestamp);
                     newCalls.save(newCalls);
                 }
 

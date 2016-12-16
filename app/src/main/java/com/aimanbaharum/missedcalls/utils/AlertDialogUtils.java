@@ -3,10 +3,12 @@ package com.aimanbaharum.missedcalls.utils;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.aimanbaharum.missedcalls.R;
+import com.aimanbaharum.missedcalls.model.Calls;
 import com.iamhabib.easy_preference.EasyPreference;
 
 /**
@@ -15,13 +17,20 @@ import com.iamhabib.easy_preference.EasyPreference;
 
 public class AlertDialogUtils {
 
-    public static void showSettings(final Context context) {
+    public static void setEndpoint(final Context context) {
         final EditText mEtEndpoint = new EditText(context);
-        mEtEndpoint.setHint(context.getResources().getString(R.string.hint_endpoint));
+
+        String strEndpoint = EasyPreference.with(context)
+                .getString(PrefKey.KEY_ENDPOINT.name(), "");
+        if (strEndpoint.equals("")) {
+            mEtEndpoint.setHint(context.getResources().getString(R.string.hint_endpoint));
+        } else {
+            mEtEndpoint.setText(strEndpoint);
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true)
-                .setTitle("Set Endpoint")
+                .setTitle(context.getResources().getString(R.string.menu_set_endpoint))
                 .setView(mEtEndpoint)
                 .setPositiveButton("Done", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -42,6 +51,42 @@ public class AlertDialogUtils {
         alert.show();
     }
 
+    public static void setSyncLimit(final Context context) {
+        final EditText mEtEndpoint = new EditText(context);
+        mEtEndpoint.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+        int syncLimit = EasyPreference.with(context)
+                .getInt(PrefKey.KEY_SYNC_LIMIT.name(), -1);
+        if (syncLimit < 0) {
+            mEtEndpoint.setText(String.valueOf(Calls.getMissedCalledList().size()));
+        } else {
+            mEtEndpoint.setText(String.valueOf(syncLimit));
+        }
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setCancelable(true)
+                .setTitle(context.getResources().getString(R.string.menu_set_limit))
+                .setView(mEtEndpoint)
+                .setPositiveButton("Done", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        String strLimit = mEtEndpoint.getText().toString();
+                        EasyPreference.with(context)
+                                .addInt(PrefKey.KEY_SYNC_LIMIT.name(), Integer.parseInt(strLimit))
+                                .save();
+                        Toast.makeText(context, "Limit saved", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
     public static void showEndpoint(final Context context) {
 
         String strEndpoint = EasyPreference.with(context)
@@ -49,7 +94,7 @@ public class AlertDialogUtils {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setCancelable(true)
-                .setTitle("Current Endpoint")
+                .setTitle(context.getResources().getString(R.string.current_endpoint))
                 .setMessage(strEndpoint)
                 .setNegativeButton("Done", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -65,7 +110,7 @@ public class AlertDialogUtils {
                 .getInt(PrefKey.KEY_INTERVAL_INDEX.name(), 2);
 
         AlertDialog.Builder b = new AlertDialog.Builder(context);
-        b.setTitle("Set Interval");
+        b.setTitle(context.getResources().getString(R.string.menu_interval));
         String[] indexes = {"1 min", "5 mins", "10 mins", "15 mins", "30 mins", "1 hour"};
         b.setSingleChoiceItems(indexes, intervalIdx, new DialogInterface.OnClickListener() {
             @Override

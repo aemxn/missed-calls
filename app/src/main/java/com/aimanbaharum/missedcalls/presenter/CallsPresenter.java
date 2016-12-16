@@ -1,7 +1,6 @@
 package com.aimanbaharum.missedcalls.presenter;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.aimanbaharum.missedcalls.model.Calls;
 import com.aimanbaharum.missedcalls.network.HttpStatus;
@@ -12,6 +11,7 @@ import com.aimanbaharum.missedcalls.view.CallsView;
 import com.aimanbaharum.missedcalls.view.SyncView;
 import com.iamhabib.easy_preference.EasyPreference;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +20,7 @@ import java.util.List;
 
 public class CallsPresenter {
 
+    private static final String TAG = CallsPresenter.class.getSimpleName();
     private Context mContext;
 
 
@@ -40,18 +41,27 @@ public class CallsPresenter {
 
     public void syncNumbers(final SyncView syncView) {
 
-        Log.d("CallsPresenter", "sync started");
         String strEndpoint = EasyPreference.with(mContext)
                 .getString(PrefKey.KEY_ENDPOINT.name(), "");
 
         if (!strEndpoint.isEmpty()) {
-            final List<Calls> unsyncedNumbers = Calls.getUnsynced();
+//            final List<Calls> unsyncedNumbers = Calls.getUnsynced();
+            final List<Calls> allNumbers = Calls.getMissedCalledList();
 
-            if (unsyncedNumbers.size() > 0) {
+            // Numbers to be uploaded is limited
+            int syncLimit = EasyPreference.with(mContext)
+                    .getInt(PrefKey.KEY_SYNC_LIMIT.name(), allNumbers.size());
+            List<Calls> limNumbers = new ArrayList<>();
 
-                String[] numbers = new String[unsyncedNumbers.size()];
+            for (int i = 0; i < (syncLimit > allNumbers.size() ? allNumbers.size() : syncLimit); i++) {
+                limNumbers.add(allNumbers.get(i));
+            }
+
+            if (limNumbers.size() > 0) {
+
+                String[] numbers = new String[limNumbers.size()];
                 for (int i = 0; i < numbers.length; i++) {
-                    numbers[i] = unsyncedNumbers.get(i).getCallerNumber();
+                    numbers[i] = limNumbers.get(i).getCallerNumber();
                 }
 
                 SyncService syncService = new SyncService();
@@ -60,7 +70,7 @@ public class CallsPresenter {
                     public void onSyncApiSuccess(int code, String response) {
                         switch (code) {
                             case HttpStatus.SUCCESS:
-                                Calls.setSynced(unsyncedNumbers);
+//                                Calls.setSynced(allNumbers);
                                 syncView.onSyncSuccess(response);
                                 break;
                             case HttpStatus.FAILED:

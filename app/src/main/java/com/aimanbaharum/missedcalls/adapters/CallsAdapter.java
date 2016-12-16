@@ -1,6 +1,5 @@
 package com.aimanbaharum.missedcalls.adapters;
 
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,8 +40,8 @@ public class CallsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @BindView(R.id.tv_caller_timestamp)
         TextView tvCallerTimestamp;
 
-        @BindView(R.id.tv_synced)
-        TextView tvSynced;
+//        @BindView(R.id.tv_synced)
+//        TextView tvSynced;
 
         public CallsViewHolder(View itemView) {
             super(itemView);
@@ -67,15 +66,15 @@ public class CallsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         vh.tvCallerTimestamp.setText(calls.getDateCalled());
         vh.tvCounter.setText(String.format("%s.", String.valueOf(position + 1)));
 
-        if (!calls.isSynced()) {
-            vh.tvSynced.setText("Not synced");
-            vh.tvSynced.setTextColor(ContextCompat.getColor(
-                    vh.tvSynced.getContext(), android.R.color.holo_red_dark));
-        } else {
-            vh.tvSynced.setText("Synced");
-            vh.tvSynced.setTextColor(ContextCompat.getColor(
-                    vh.tvSynced.getContext(), android.R.color.holo_green_dark));
-        }
+//        if (!calls.isSynced()) {
+//            vh.tvSynced.setText("Not synced");
+//            vh.tvSynced.setTextColor(ContextCompat.getColor(
+//                    vh.tvSynced.getContext(), android.R.color.holo_red_dark));
+//        } else {
+//            vh.tvSynced.setText("Synced");
+//            vh.tvSynced.setTextColor(ContextCompat.getColor(
+//                    vh.tvSynced.getContext(), android.R.color.holo_green_dark));
+//        }
     }
 
     @Override
