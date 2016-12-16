@@ -1,6 +1,7 @@
 package com.aimanbaharum.missedcalls.presenter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.aimanbaharum.missedcalls.model.Calls;
 import com.aimanbaharum.missedcalls.network.HttpStatus;
@@ -38,6 +39,8 @@ public class CallsPresenter {
     }
 
     public void syncNumbers(final SyncView syncView) {
+
+        Log.d("CallsPresenter", "sync started");
         String strEndpoint = EasyPreference.with(mContext)
                 .getString(PrefKey.KEY_ENDPOINT.name(), "");
 
@@ -61,7 +64,7 @@ public class CallsPresenter {
                                 syncView.onSyncSuccess(response);
                                 break;
                             case HttpStatus.FAILED:
-                                syncView.onSyncFailed("onSyncApi failed");
+                                syncView.onSyncFailed(response);
                                 break;
                         }
                     }

@@ -13,7 +13,7 @@ public abstract class BaseHttpCall {
         return new Request.Builder()
                 .url(endpoint)
                 .post(requestBody)
-                .addHeader("Content-Type", "application/json")
+                .addHeader("Content-Length", "0")
                 .build();
     }
 }

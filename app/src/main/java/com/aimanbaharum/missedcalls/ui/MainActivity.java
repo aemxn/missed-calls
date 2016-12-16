@@ -182,14 +182,24 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
     }
 
     @Override
-    public void onSyncSuccess(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        callsPresenter.showMissedCalledList(this);
+    public void onSyncSuccess(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                callsPresenter.showMissedCalledList(MainActivity.this);
+            }
+        });
     }
 
     @Override
-    public void onSyncFailed(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        callsPresenter.showMissedCalledList(this);
+    public void onSyncFailed(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                callsPresenter.showMissedCalledList(MainActivity.this);
+            }
+        });
     }
 }

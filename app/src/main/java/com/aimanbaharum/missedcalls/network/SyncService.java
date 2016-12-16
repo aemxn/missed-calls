@@ -7,6 +7,7 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 /**
@@ -27,12 +28,12 @@ public class SyncService extends BaseHttpCall {
             sb.append(n);
         }
 
-        String fEndpoint = endpoint + "?numbers=" + sb.toString();
+        final String fEndpoint = endpoint + "?numbers=" + sb.toString();
 
         try {
 //            MediaType mediaType = MediaType.parse("application/json");
-//            RequestBody requestBody = RequestBody.create(mediaType, postJson.toString());
-            Request request = post(fEndpoint, null);
+            RequestBody requestBody = RequestBody.create(null, new byte[0]);
+            Request request = post(fEndpoint, requestBody);
             new Client().getService().newCall(request).enqueue(new Callback() {
 
                 @Override
@@ -45,9 +46,9 @@ public class SyncService extends BaseHttpCall {
                 public void onResponse(Call call, Response response) throws IOException {
                     String jsonResponse = response.body().string();
                     if (response.isSuccessful()) {
-                        callback.onSyncApiSuccess(HttpStatus.SUCCESS, jsonResponse);
+                        callback.onSyncApiSuccess(HttpStatus.SUCCESS, fEndpoint);
                     } else {
-                        callback.onSyncApiSuccess(HttpStatus.FAILED, jsonResponse);
+                        callback.onSyncApiSuccess(HttpStatus.FAILED, fEndpoint);
                     }
                 }
             });
