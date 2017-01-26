@@ -1,10 +1,9 @@
-package com.aimanbaharum.missedcalls.ui;
+package com.aimanbaharum.missedcalls.ui.main;
 
 import android.Manifest;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,14 +16,11 @@ import android.widget.Toast;
 
 import com.aimanbaharum.missedcalls.R;
 import com.aimanbaharum.missedcalls.adapters.CallsAdapter;
+import com.aimanbaharum.missedcalls.base.BaseActivity;
 import com.aimanbaharum.missedcalls.model.Calls;
-import com.aimanbaharum.missedcalls.presenter.CallsPresenter;
-import com.aimanbaharum.missedcalls.presenter.LogCalls;
 import com.aimanbaharum.missedcalls.utils.AlertDialogUtils;
 import com.aimanbaharum.missedcalls.utils.Constants;
 import com.aimanbaharum.missedcalls.utils.PrefKey;
-import com.aimanbaharum.missedcalls.view.CallsView;
-import com.aimanbaharum.missedcalls.view.SyncView;
 import com.iamhabib.easy_preference.EasyPreference;
 
 import java.util.List;
@@ -37,7 +33,7 @@ import permissions.dispatcher.NeedsPermission;
 import permissions.dispatcher.RuntimePermissions;
 
 @RuntimePermissions
-public class MainActivity extends AppCompatActivity implements CallsView, SyncView,
+public class MainActivity extends BaseActivity implements MainContract.MainView,
         SmartScheduler.JobScheduledCallback, AlertDialogUtils.IntervalSelect {
 
     @BindView(R.id.tv_empty)
@@ -50,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final String JOB_PERIODIC_TASK_TAG = "com.aimanbaharum.missedcalls.JobPeriodicTask";
 
-    private CallsPresenter callsPresenter;
+    private MainPresenter mainPresenter;
     private CallsAdapter mCallsAdapter;
     private LogCalls logCalls;
 
@@ -97,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    callsPresenter.syncNumbers(MainActivity.this);
+                    mainPresenter.onSyncRequested();
 //                    Toast.makeText(MainActivity.this, "Job: " + job.getJobId() + " scheduled!", Toast.LENGTH_SHORT).show();
                 }
             });
@@ -111,8 +107,9 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
 
         // todo combine logcalls with presenter
 
-        callsPresenter = new CallsPresenter(this);
-        callsPresenter.showMissedCalledList(this);
+        mainPresenter = new MainPresenter(this);
+        mainPresenter.attachView(this);
+        mainPresenter.onListRequested();
     }
 
     @Override
@@ -129,13 +126,6 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
         rvCallsList.setAdapter(mCallsAdapter);
         mCallsAdapter.add(callsList);
     }
-
-    @Override
-    public void onEmptyMissedCalls() {
-        tvEmpty.setVisibility(View.VISIBLE);
-        rvCallsList.setVisibility(View.GONE);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -153,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
                 AlertDialogUtils.showEndpoint(this);
                 return true;
             case R.id.action_sync:
-                callsPresenter.syncNumbers(this);
+                mainPresenter.onSyncRequested();
                 return true;
             case R.id.action_interval:
                 AlertDialogUtils.setInterval(this, this);
@@ -207,5 +197,36 @@ public class MainActivity extends AppCompatActivity implements CallsView, SyncVi
 //                callsPresenter.showMissedCalledList(MainActivity.this);
             }
         });
+    }
+
+    @Override
+    public void showProgress() {
+
+    }
+
+    @Override
+    public void hideProgress() {
+
+    }
+
+    @Override
+    public void showUnauthorizedError() {
+
+    }
+
+    @Override
+    public void showEmpty() {
+        tvEmpty.setVisibility(View.VISIBLE);
+        rvCallsList.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void showError(String errorMessage) {
+        Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showMessageLayout(boolean show) {
+
     }
 }

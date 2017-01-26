@@ -1,9 +1,8 @@
-package com.aimanbaharum.missedcalls.presenter;
+package com.aimanbaharum.missedcalls.ui.main;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.CallLog;
-import android.util.Log;
 
 import com.aimanbaharum.missedcalls.model.Calls;
 

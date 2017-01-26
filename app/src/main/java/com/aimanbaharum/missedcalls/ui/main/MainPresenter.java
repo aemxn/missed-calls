@@ -1,14 +1,13 @@
-package com.aimanbaharum.missedcalls.presenter;
+package com.aimanbaharum.missedcalls.ui.main;
 
 import android.content.Context;
 
+import com.aimanbaharum.missedcalls.base.BasePresenter;
 import com.aimanbaharum.missedcalls.model.Calls;
 import com.aimanbaharum.missedcalls.network.HttpStatus;
 import com.aimanbaharum.missedcalls.network.SyncService;
 import com.aimanbaharum.missedcalls.network.interfaces.SyncCallback;
 import com.aimanbaharum.missedcalls.utils.PrefKey;
-import com.aimanbaharum.missedcalls.view.CallsView;
-import com.aimanbaharum.missedcalls.view.SyncView;
 import com.iamhabib.easy_preference.EasyPreference;
 
 import java.util.ArrayList;
@@ -18,28 +17,39 @@ import java.util.List;
  * Created by aimanb on 16/12/2016.
  */
 
-public class CallsPresenter {
+public class MainPresenter extends BasePresenter<MainContract.MainView> implements MainContract.ViewActions {
 
-    private static final String TAG = CallsPresenter.class.getSimpleName();
+    private static final String TAG = MainPresenter.class.getSimpleName();
     private Context mContext;
 
 
-    public CallsPresenter(Context context) {
+    public MainPresenter(Context context) {
         this.mContext = context;
     }
 
-    public void showMissedCalledList(CallsView callsView) {
+    @Override
+    public void onListRequested() {
+        showMissedCalledList();
+    }
+
+    @Override
+    public void onSyncRequested() {
+        syncNumbers();
+    }
+
+    private void showMissedCalledList() {
+        if (!isViewAttached()) return;
+        mView.showMessageLayout(false);
 
         List<Calls> callsList = Calls.getMissedCalledList();
-
         if (callsList.size() > 0) {
-            callsView.onShowMissedCalls(callsList);
+            mView.onShowMissedCalls(callsList);
         } else {
-            callsView.onEmptyMissedCalls();
+            mView.showEmpty();
         }
     }
 
-    public void syncNumbers(final SyncView syncView) {
+    private void syncNumbers() {
 
         String strEndpoint = EasyPreference.with(mContext)
                 .getString(PrefKey.KEY_ENDPOINT.name(), "");
@@ -71,24 +81,24 @@ public class CallsPresenter {
                         switch (code) {
                             case HttpStatus.SUCCESS:
 //                                Calls.setSynced(allNumbers);
-                                syncView.onSyncSuccess(response);
+                                mView.onSyncSuccess(response);
                                 break;
                             case HttpStatus.FAILED:
-                                syncView.onSyncFailed(response);
+                                mView.onSyncFailed(response);
                                 break;
                         }
                     }
 
                     @Override
                     public void onSyncApiFailure(String message) {
-                        syncView.onSyncFailed(message);
+                        mView.showError(message);
                     }
                 });
             } else {
-                syncView.onSyncFailed("No unsynced numbers");
+                mView.showError("No unsynced numbers");
             }
         } else {
-            syncView.onSyncFailed("Please set endpoint in the Settings");
+            mView.showError("Please set endpoint in the Settings");
         }
     }
 }
