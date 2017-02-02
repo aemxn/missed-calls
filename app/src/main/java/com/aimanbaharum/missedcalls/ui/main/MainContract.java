@@ -1,7 +1,7 @@
 package com.aimanbaharum.missedcalls.ui.main;
 
 import com.aimanbaharum.missedcalls.base.RemoteView;
-import com.aimanbaharum.missedcalls.model.Calls;
+import com.aimanbaharum.missedcalls.data.Calls;
 
 import java.util.List;
 

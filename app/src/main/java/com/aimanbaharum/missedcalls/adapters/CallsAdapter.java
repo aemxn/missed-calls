@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.aimanbaharum.missedcalls.R;
-import com.aimanbaharum.missedcalls.model.Calls;
+import com.aimanbaharum.missedcalls.data.Calls;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.aimanbaharum.missedcalls.R;
-import com.aimanbaharum.missedcalls.model.Calls;
+import com.aimanbaharum.missedcalls.data.Calls;
 import com.iamhabib.easy_preference.EasyPreference;
 
 /**

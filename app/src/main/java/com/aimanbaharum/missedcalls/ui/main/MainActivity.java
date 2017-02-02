@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.aimanbaharum.missedcalls.R;
 import com.aimanbaharum.missedcalls.adapters.CallsAdapter;
 import com.aimanbaharum.missedcalls.base.BaseActivity;
-import com.aimanbaharum.missedcalls.model.Calls;
+import com.aimanbaharum.missedcalls.data.Calls;
 import com.aimanbaharum.missedcalls.utils.AlertDialogUtils;
 import com.aimanbaharum.missedcalls.utils.Constants;
 import com.aimanbaharum.missedcalls.utils.PrefKey;

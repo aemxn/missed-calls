@@ -5,7 +5,8 @@ import android.database.Cursor;
 import android.provider.CallLog;
 
 import com.aimanbaharum.missedcalls.base.BasePresenter;
-import com.aimanbaharum.missedcalls.model.Calls;
+import com.aimanbaharum.missedcalls.data.Calls;
+import com.aimanbaharum.missedcalls.db.CallsStorage;
 import com.aimanbaharum.missedcalls.network.HttpStatus;
 import com.aimanbaharum.missedcalls.network.SyncService;
 import com.aimanbaharum.missedcalls.network.interfaces.SyncCallback;
@@ -16,6 +17,8 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.realm.Realm;
+
 /**
  * Created by aimanb on 16/12/2016.
  */
@@ -24,7 +27,6 @@ public class MainPresenter extends BasePresenter<MainContract.MainView> implemen
 
     private static final String TAG = MainPresenter.class.getSimpleName();
     private Context mContext;
-
 
     public MainPresenter(Context context) {
         this.mContext = context;
@@ -78,7 +80,7 @@ public class MainPresenter extends BasePresenter<MainContract.MainView> implemen
                     newCalls.setCallerNumber(mCallerNumber);
                     newCalls.setDateCalled(mCallerTime);
                     newCalls.setCallerTimestamp(mCallerTimestamp);
-                    newCalls.save(newCalls);
+                    CallsStorage.save(newCalls);
                 }
 
             } while (mCallCursor.moveToNext());
@@ -91,12 +93,14 @@ public class MainPresenter extends BasePresenter<MainContract.MainView> implemen
         if (!isViewAttached()) return;
         mView.showMessageLayout(false);
 
-        List<Calls> callsList = Calls.getMissedCalledList();
+        Realm realm = Realm.getDefaultInstance();
+        List<Calls> callsList = CallsStorage.getMissedCalledList(realm);
         if (callsList.size() > 0) {
             mView.onShowMissedCalls(callsList);
         } else {
             mView.showEmpty();
         }
+        realm.close();
     }
 
     private void syncNumbers() {
@@ -105,8 +109,8 @@ public class MainPresenter extends BasePresenter<MainContract.MainView> implemen
                 .getString(PrefKey.KEY_ENDPOINT.name(), "");
 
         if (!strEndpoint.isEmpty()) {
-//            final List<Calls> unsyncedNumbers = Calls.getUnsynced();
-            final List<Calls> allNumbers = Calls.getMissedCalledList();
+            Realm realm = Realm.getDefaultInstance();
+            final List<Calls> allNumbers = CallsStorage.getMissedCalledList(realm);
 
             // Numbers to be uploaded is limited
             int syncLimit = EasyPreference.with(mContext)
@@ -130,7 +134,6 @@ public class MainPresenter extends BasePresenter<MainContract.MainView> implemen
                     public void onSyncApiSuccess(int code, String response) {
                         switch (code) {
                             case HttpStatus.SUCCESS:
-//                                Calls.setSynced(allNumbers);
                                 mView.onSyncSuccess(response);
                                 break;
                             case HttpStatus.FAILED:
@@ -147,6 +150,7 @@ public class MainPresenter extends BasePresenter<MainContract.MainView> implemen
             } else {
                 mView.showError("No unsynced numbers");
             }
+            realm.close();
         } else {
             mView.showError("Please set endpoint in the Settings");
         }
