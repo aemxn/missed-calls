@@ -14,6 +14,7 @@ public interface MainContract {
     interface ViewActions {
         void onListRequested();
         void onSyncRequested();
+        void onStartLogCalls();
     }
 
     interface MainView extends RemoteView {

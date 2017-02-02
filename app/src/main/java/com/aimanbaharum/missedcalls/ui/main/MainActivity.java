@@ -47,8 +47,6 @@ public class MainActivity extends BaseActivity implements MainContract.MainView,
     private static final String JOB_PERIODIC_TASK_TAG = "com.aimanbaharum.missedcalls.JobPeriodicTask";
 
     private MainPresenter mainPresenter;
-    private CallsAdapter mCallsAdapter;
-    private LogCalls logCalls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +92,6 @@ public class MainActivity extends BaseActivity implements MainContract.MainView,
                 @Override
                 public void run() {
                     mainPresenter.onSyncRequested();
-//                    Toast.makeText(MainActivity.this, "Job: " + job.getJobId() + " scheduled!", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -102,14 +99,9 @@ public class MainActivity extends BaseActivity implements MainContract.MainView,
 
     @NeedsPermission({Manifest.permission.READ_CALL_LOG})
     public void startLogging() {
-        logCalls = new LogCalls(this);
-        logCalls.logCalls();
-
-        // todo combine logcalls with presenter
-
         mainPresenter = new MainPresenter(this);
         mainPresenter.attachView(this);
-        mainPresenter.onListRequested();
+        mainPresenter.onStartLogCalls();
     }
 
     @Override
@@ -122,7 +114,7 @@ public class MainActivity extends BaseActivity implements MainContract.MainView,
     public void onShowMissedCalls(List<Calls> callsList) {
         tvEmpty.setVisibility(View.GONE);
         rvCallsList.setVisibility(View.VISIBLE);
-        mCallsAdapter = new CallsAdapter();
+        CallsAdapter mCallsAdapter = new CallsAdapter();
         rvCallsList.setAdapter(mCallsAdapter);
         mCallsAdapter.add(callsList);
     }

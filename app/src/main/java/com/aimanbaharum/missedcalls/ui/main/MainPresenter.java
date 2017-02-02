@@ -1,6 +1,8 @@
 package com.aimanbaharum.missedcalls.ui.main;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.provider.CallLog;
 
 import com.aimanbaharum.missedcalls.base.BasePresenter;
 import com.aimanbaharum.missedcalls.model.Calls;
@@ -10,6 +12,7 @@ import com.aimanbaharum.missedcalls.network.interfaces.SyncCallback;
 import com.aimanbaharum.missedcalls.utils.PrefKey;
 import com.iamhabib.easy_preference.EasyPreference;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,53 @@ public class MainPresenter extends BasePresenter<MainContract.MainView> implemen
     @Override
     public void onSyncRequested() {
         syncNumbers();
+    }
+
+    @Override
+    public void onStartLogCalls() {
+        logCalls();
+    }
+
+    private void logCalls() {
+        String[] strFields = {
+                android.provider.CallLog.Calls.CACHED_NAME,
+                android.provider.CallLog.Calls.NUMBER,
+                android.provider.CallLog.Calls.DATE,
+                android.provider.CallLog.Calls.TYPE
+        };
+        String strOrder = CallLog.Calls.DATE + " DESC";
+
+        Cursor mCallCursor = mContext.getContentResolver().query(
+                android.provider.CallLog.Calls.CONTENT_URI, strFields, null, null, strOrder);
+
+        if (mCallCursor.moveToFirst()) {
+            do {
+                boolean missed = mCallCursor.getInt(mCallCursor
+                        .getColumnIndex(CallLog.Calls.TYPE)) == CallLog.Calls.MISSED_TYPE;
+                if (missed) {
+                    String mCallerName = mCallCursor.getString(mCallCursor
+                            .getColumnIndex(CallLog.Calls.CACHED_NAME));
+                    String mCallerNumber = mCallCursor.getString(mCallCursor
+                            .getColumnIndex(CallLog.Calls.NUMBER));
+
+                    long mCallerTimestamp = mCallCursor.getLong(mCallCursor
+                            .getColumnIndex(CallLog.Calls.DATE));
+                    String mCallerTime = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.LONG)
+                            .format(mCallerTimestamp);
+
+
+                    Calls newCalls = new Calls();
+                    newCalls.setCallerName(mCallerName);
+                    newCalls.setCallerNumber(mCallerNumber);
+                    newCalls.setDateCalled(mCallerTime);
+                    newCalls.setCallerTimestamp(mCallerTimestamp);
+                    newCalls.save(newCalls);
+                }
+
+            } while (mCallCursor.moveToNext());
+        }
+
+        showMissedCalledList();
     }
 
     private void showMissedCalledList() {
