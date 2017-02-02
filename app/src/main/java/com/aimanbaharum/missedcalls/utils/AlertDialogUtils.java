@@ -8,8 +8,10 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.aimanbaharum.missedcalls.R;
-import com.aimanbaharum.missedcalls.data.Calls;
+import com.aimanbaharum.missedcalls.db.CallsStorage;
 import com.iamhabib.easy_preference.EasyPreference;
+
+import io.realm.Realm;
 
 /**
  * Created by aimanb on 16/12/2016.
@@ -58,7 +60,9 @@ public class AlertDialogUtils {
         int syncLimit = EasyPreference.with(context)
                 .getInt(PrefKey.KEY_SYNC_LIMIT.name(), -1);
         if (syncLimit < 0) {
-            mEtEndpoint.setText(String.valueOf(Calls.getMissedCalledList().size()));
+            Realm realm = Realm.getDefaultInstance();
+            mEtEndpoint.setText(String.valueOf(CallsStorage.getMissedCalledList(realm).size()));
+            realm.close();
         } else {
             mEtEndpoint.setText(String.valueOf(syncLimit));
         }
